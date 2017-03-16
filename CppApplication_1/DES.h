@@ -19,20 +19,24 @@
 using std::cout;
 using std::cin;
 using std::endl;
+#include <bitset>         // std::bitset
+#include <time.h>       /* clock_t, clock, CLOCKS_PER_SEC */
 
 class DES {
-public:
-    DES(std::bitset<64>,std::bitset<64>);
-    DES(const DES& orig);
-    virtual ~DES();
-    
-    
 private:
-    std::bitset<64> message;
+	//fields
+	std::bitset<64> message;
     std::bitset<64> key;
     
-    void KeyGen();
+    //functions
+//    void KeyGen();
     std::bitset<56> ParityDrop();
+    std::bitset<48> KeyCompression( std::bitset<56> );
+public:
+    DES( std::bitset<64> , std::bitset<64> );
+    DES(const DES& orig);
+    virtual ~DES();
+    void KeyGen();//temporary public
 };
 
 #endif /* DES_H */

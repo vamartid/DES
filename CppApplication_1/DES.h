@@ -26,17 +26,19 @@ class DES {
 private:
 	//fields
 	std::bitset<64> message;
-    std::bitset<64> key;
+//     key;
     std::bitset<48> keys[16];
     //functions
 //    void KeyGen();
-    std::bitset<56> ParityDrop();
+    std::bitset<56> ParityDrop(std::bitset<64>);
     std::bitset<48> KeyCompression( std::bitset<56> );
+    void Rotate(std::bitset<28>& b, unsigned short m);
+
 public:
-    DES( std::bitset<64> , std::bitset<64> );
+    DES( std::bitset<64> );
     DES(const DES& orig);
     virtual ~DES();
-    void KeyGen();//temporary public
+    void KeyGen(std::bitset<64>);//temporary public
 };
 
 #endif /* DES_H */

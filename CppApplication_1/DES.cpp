@@ -23,9 +23,8 @@ unsigned short compression_permutation[]={
 	46, 42, 50, 36, 29, 32
 };
 
-DES::DES(std::bitset<64> m, std::bitset<64> k) {
+DES::DES(std::bitset<64> m ) {
     message = m;
-    key = k;
 }
 
 DES::DES(const DES& orig) {
@@ -34,17 +33,21 @@ DES::DES(const DES& orig) {
 DES::~DES() {
 
 }
-
+/**
+ * cycle shift the bitset m possitions left
+ */
+void DES::Rotate(std::bitset<28>& b, unsigned short m){
+	b = b << m | b >> (28-m);
+}
 /**
  * composes the keys which will be used on the DES algorithm
- * and saves thems on the keys[] field
+ * and saves them on the keys[] field
  */
-void DES::KeyGen(){
-
+void DES::KeyGen(std::bitset<64> key){
 	unsigned short round=1;
 	std::cout<<"Input key\t\t"<<key<<std::endl;
 	//parity drop on key input
-    std::bitset<56> cypherKey=ParityDrop();
+    std::bitset<56> cypherKey=ParityDrop(key);
     //print output of parity drop
 	std::cout<<"Parity drop\t\t"<<cypherKey<<std::endl;
 	//declare the parts
@@ -68,8 +71,10 @@ void DES::KeyGen(){
 			shift--;
 		}
 		//and then left shift both parts
-		left_part=left_part<<shift;
-		right_part=right_part<<shift;
+		Rotate(left_part,shift);
+		Rotate(right_part,shift);
+//		left_part=left_part<<shift;
+//		right_part=right_part<<shift;
 		//print the 2 parts
 		std::cout<<"Left  Shifted Part\t"<<left_part<<std::endl;
 		std::cout<<"Right Shifted Part\t"<<right_part<<std::endl;
@@ -80,7 +85,7 @@ void DES::KeyGen(){
 			merged.set(i,left_part[i-28]);
 		}
 		//apply the right part to the left of the merged
-		for (int i = 27; i > 0; i--) {
+		for (int i = 27; i >= 0; i--) {
 			merged.set(i,right_part[i]);
 		}
 		std::cout<<"Merged output\t\t"<<merged<<std::endl;
@@ -101,13 +106,13 @@ void DES::KeyGen(){
 /**
  * perform parity drop on the key
  */
-std::bitset<56> DES::ParityDrop(){
+std::bitset<56> DES::ParityDrop(std::bitset<64> key){
     std::bitset<56> output;
     int pos;//pos will take parity drop value--
 	//because the array starts from 1 and not 0
     //also because we go from 55 to 0 we need to parse
     //the array from the start which is 1 so we do 55-1
-	//also the value is being substructed from 63
+	//also the value is being subtracted from 63
 	//because set function starts from the other position
 	for (int i = 55; i >= 0; i--) {
 		pos=parity_drop[55-i]-1;
@@ -125,7 +130,7 @@ std::bitset<48> DES::KeyCompression( std::bitset<56> input ){
     //because the array starts from 1 and not 0
     //also because we go from 55 to 0 we need to parse
     //the array from the start which is 1 so we do 55-1
-    //also the value is being substructed from 63
+    //also the value is being subtracted from 63
     //because set function starts from the other position
     for (int i = 47; i >=0; i--) {
 		pos=compression_permutation[47-i]-1;

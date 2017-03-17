@@ -3,20 +3,20 @@
 //key actions
 unsigned short parity_drop[]={
 	57, 49, 41, 33, 25, 17,  9,
-	1, 58, 50, 42, 34, 26, 18,
+	 1, 58, 50, 42, 34, 26, 18,
 	10,  2, 59, 51, 43, 35, 27,
 	19, 11,  3, 60, 52, 44, 36,
 	63, 55, 47, 39, 31, 23, 15,
-	7, 62, 54, 46, 38, 30, 22,
+	 7, 62, 54, 46, 38, 30, 22,
 	14,  6, 61, 53, 45, 37, 29,
 	21, 13,  5, 28, 20, 12,  4
 };
 
 unsigned short compression_permutation[]={
-	14, 17, 11, 24,  1, 5,
-	3, 28 ,15,  6, 21, 10,
-	23, 19, 12,  4, 26, 8,
-	16,  7, 27, 20, 13, 2,
+	14, 17, 11, 24,  1,  5,
+	 3, 28, 15,  6, 21, 10,
+	23, 19, 12,  4, 26,  8,
+	16,  7, 27, 20, 13,  2,
 	41, 52, 31, 37, 47, 55,
 	30, 40, 51, 45, 33, 48,
 	44, 49, 39, 56, 34, 53,
@@ -35,6 +35,10 @@ DES::~DES() {
 
 }
 
+/**
+ * composes the keys which will be used on the DES algorithm
+ * and saves thems on the keys[] field
+ */
 void DES::KeyGen(){
 
 	unsigned short round=1;
@@ -100,12 +104,14 @@ void DES::KeyGen(){
 std::bitset<56> DES::ParityDrop(){
     std::bitset<56> output;
     int pos;//pos will take parity drop value--
-    //because the array starts from 1 and not 0
-    //also the value is being substructed from 63
-    //because set function starts from the other position
-    for (int i = 0; i < 56; i++) {
-    	pos=63-(parity_drop[i]-1);
-    	output.set(i,key[pos]);
+	//because the array starts from 1 and not 0
+    //also because we go from 55 to 0 we need to parse
+    //the array from the start which is 1 so we do 55-1
+	//also the value is being substructed from 63
+	//because set function starts from the other position
+	for (int i = 55; i >= 0; i--) {
+		pos=parity_drop[55-i]-1;
+		output.set(i,key[63-pos]);
 	}
 	return output;
 }
@@ -117,11 +123,13 @@ std::bitset<48> DES::KeyCompression( std::bitset<56> input ){
     std::bitset<48> output;
     int pos;//pos will take parity drop value--
     //because the array starts from 1 and not 0
+    //also because we go from 55 to 0 we need to parse
+    //the array from the start which is 1 so we do 55-1
     //also the value is being substructed from 63
     //because set function starts from the other position
-    for (int i = 0; i < 48; i++) {
-    	pos=63-(parity_drop[i]-1);
-    	output.set(i,input[pos]);
+    for (int i = 47; i >=0; i--) {
+		pos=compression_permutation[47-i]-1;
+		output.set(i,input[55-pos]);
 	}
 	return output;
 }

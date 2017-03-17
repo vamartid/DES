@@ -27,7 +27,7 @@ private:
 	//fields
 	std::bitset<64> message;
     std::bitset<64> key;
-    
+    std::bitset<48> keys[16];
     //functions
 //    void KeyGen();
     std::bitset<56> ParityDrop();

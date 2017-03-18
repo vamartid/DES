@@ -1,16 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   DES.h
- * Author: Celia
- *
- * Created on 15 Μαρτίου 2017, 2:02 μμ
- */
-
 #ifndef DES_H
 #define DES_H
 
@@ -25,21 +12,24 @@ using std::endl;
 class DES {
 private:
 	//fields
-	std::bitset<64> message;
+//	std::bitset<64> message;
 //     key;
     std::bitset<48> keys[16];
     //functions
 //    void KeyGen();
     std::bitset<56> ParityDrop(std::bitset<64>);
+    void Rotate(std::bitset<28>& , unsigned short );
     std::bitset<48> KeyCompression( std::bitset<56> );
-    void Rotate(std::bitset<28>& b, unsigned short m);
-
+    void KeyGen(std::bitset<64>);
+    std::bitset<64> Permutate( std::bitset<64> , unsigned short []);
 public:
-    DES( std::bitset<64> );
-    DES(const DES& orig);
+//    DES( std::bitset<64> );
+    DES();
+    DES(const DES& );
     virtual ~DES();
-    void KeyGen(std::bitset<64>);//temporary public
+    std::bitset<64> Cipher(std::bitset<64> , std::bitset<64> );
+
+
 };
 
 #endif /* DES_H */
-

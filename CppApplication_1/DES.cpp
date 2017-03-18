@@ -23,22 +23,88 @@ unsigned short compression_permutation[]={
 	46, 42, 50, 36, 29, 32
 };
 
-DES::DES(std::bitset<64> m ) {
-    message = m;
-}
+unsigned short initial_permutation[]={
+	58, 50, 42, 34, 26, 18, 10,  2,
+	60, 52, 44, 36, 28, 20, 12,  4,
+	62, 54, 46, 38, 30, 22, 14,  6,
+	64, 56, 48, 40, 32, 24, 16,  8,
+	57, 49, 41, 33, 25, 17,  9,  1,
+	59, 51, 43, 35, 27, 19, 11,  3,
+	61, 53, 45, 37, 29, 21, 13,  5,
+	63, 55, 47, 39, 31, 23, 15,  7
+};
 
+unsigned short final_permutation[]={
+	40,  8, 48, 16, 56, 24, 64, 32,
+	39,  7, 47, 15, 55, 23, 63, 31,
+	38,  6, 46, 14, 54, 22, 62, 30,
+	37,  5, 45, 13, 53, 21, 61, 29,
+	36,  4, 44, 12, 52, 20, 60, 28,
+	35,  3, 43, 11, 51, 19, 59, 27,
+	34,  2, 42, 10, 50, 18, 58, 26,
+	33,  1, 41,  9, 49, 17, 57, 25
+};
+
+//DES::DES(std::bitset<64> m ) {
+//    message = m;
+//}
+DES::DES() {
+
+}
 DES::DES(const DES& orig) {
 }
 
 DES::~DES() {
 
 }
+
 /**
- * cycle shift the bitset m possitions left
+ * DES is a Block cipher, which takes
+ * 64-bit plain text and a 56-bit key
+ * and creates a 64-bit cipher text
  */
-void DES::Rotate(std::bitset<28>& b, unsigned short m){
-	b = b << m | b >> (28-m);
+std::bitset<64>  DES::Cipher(std::bitset<64> message, std::bitset<64> key){
+	//declare 64-bit cipher text
+	std::bitset<64> ciphertext;
+	//generate the keys with keygen function
+    KeyGen(key);
+    //we have all the keys on the keys field of this object now
+    //
+    //we can now perform the General Structure of DES algorithm
+    //
+    //the message is
+    std::cout<<"Message\t\t\t"<<message<<std::endl;
+    //perform initial permutation
+    ciphertext=Permutate(message,initial_permutation);
+    std::cout<<"Initial permutation\t"<<ciphertext<<std::endl;
+	//we can now perform the rounds
+    //->need to be implemented
+
+    //perform final permutation
+    ciphertext=Permutate(message,final_permutation);
+	std::cout<<"Final permutation\t"<<ciphertext<<std::endl;
+
+    return ciphertext;
 }
+
+/**
+ * perform key compression on the input
+ */
+std::bitset<64> DES::Permutate( std::bitset<64> input ,unsigned short permutation[]){
+    std::bitset<64> output;
+    int pos;//pos will take parity drop value--
+    //because the array starts from 1 and not 0
+    //also because we go from 63 to 0 we need to parse
+    //the array from the start which is 1 so we do 63-1
+    //also the value is being subtracted from 63
+    //because set function starts from the other position
+    for (int i = 63; i >=0; i--) {
+		pos=permutation[63-i]-1;
+		output.set(i,input[63-pos]);
+	}
+	return output;
+}
+
 /**
  * composes the keys which will be used on the DES algorithm
  * and saves them on the keys[] field
@@ -47,17 +113,17 @@ void DES::KeyGen(std::bitset<64> key){
 	unsigned short round=1;
 	std::cout<<"Input key\t\t"<<key<<std::endl;
 	//parity drop on key input
-    std::bitset<56> cypherKey=ParityDrop(key);
+    std::bitset<56> cipherKey=ParityDrop(key);
     //print output of parity drop
-	std::cout<<"Parity drop\t\t"<<cypherKey<<std::endl;
+	std::cout<<"Parity drop\t\t"<<cipherKey<<std::endl;
 	//declare the parts
 	std::bitset<28> left_part,right_part;
 	//we need to break the key on the 27 bit to two parts
 	for (int i = 28; i < 56; i++) {
-		left_part.set(i-28,cypherKey[i]);
+		left_part.set(i-28,cipherKey[i]);
 	}
 	for (int i = 0; i < 28; i++) {
-		right_part.set(i,cypherKey[i]);
+		right_part.set(i,cipherKey[i]);
 	}
 	do{
 		//print the 2 parts
@@ -98,10 +164,9 @@ void DES::KeyGen(std::bitset<64> key){
 		//this will repeat for the 16 keys and the shift will be
 	}while(round<=16);
 	for (int i = 0; i < 16; ++i) {
-		std::cout<<"Output Key "<<i<<" "<<keys[i]<<std::endl;
+		std::cout<<"Output Key "<<i<<"\t\t"<<keys[i]<<std::endl;
 	}
 }
-
 
 /**
  * perform parity drop on the key
@@ -122,6 +187,13 @@ std::bitset<56> DES::ParityDrop(std::bitset<64> key){
 }
 
 /**
+ * cycle shift the bitset m possitions left
+ */
+void DES::Rotate(std::bitset<28>& b, unsigned short m){
+	b = b << m | b >> (28-m);
+}
+
+/**
  * perform key compression on the input
  */
 std::bitset<48> DES::KeyCompression( std::bitset<56> input ){
@@ -138,4 +210,3 @@ std::bitset<48> DES::KeyCompression( std::bitset<56> input ){
 	}
 	return output;
 }
-

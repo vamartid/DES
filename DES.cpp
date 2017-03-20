@@ -149,16 +149,59 @@ std::bitset<64>  DES::Cipher(std::bitset<64> message, std::bitset<64> key){
     ciphertext=Permutate(message,initial_permutation);
     osc.Cout("Initial permutation\t"+ciphertext.to_string());
 	//we can now perform the rounds
+
     //->need to be implemented
+    Rounds(ciphertext);
 
     //perform final permutation
-    ciphertext=Permutate(message,final_permutation);
+    ciphertext=Permutate(ciphertext,final_permutation);
 
     osc.Cout("Final permutation\t"+ciphertext.to_string());
 //    osc.CoutAll();
     osc.LogSaved("DesLogFile");
 
     return ciphertext;
+}
+
+void DES::Rounds(std::bitset<64> &input ){
+	for (short int round=1;round<=16;round++){
+		osc.Cout("Round "+std::to_string(round));
+		osc.Cout("Round input\t\t"+input.to_string());
+		//split the message on 2 equal-sized parts
+		//declare the parts
+		std::bitset<32> left_part,right_part;
+		//we need to break the key on the 27 bit to two parts
+		for (int i = 32; i < 64; i++) {
+			left_part.set(i-32,input[i]);
+		}
+		for (int i = 0; i < 32; i++) {
+			right_part.set(i,input[i]);
+		}
+		osc.Cout("Left Part\t\t"+left_part.to_string());
+		osc.Cout("Right Part\t\t"+right_part.to_string());
+		//send the right part to the F function with the round's key
+		std::bitset<32> f_output=F(right_part, keys[round-1]);
+		osc.Cout("F output\t\t"+f_output.to_string());
+		//XOR the F function output with the left part
+		//set that output as the current left part
+		left_part=left_part^f_output;
+		osc.Cout("XOR(Li,Foutput)\t"+left_part.to_string());
+		//keep right part the same
+
+		//do the cross way merge
+		std::bitset<64> merged;
+		//apply the right part to the left of the merged
+		for (int i = 63; i > 31; i--) {
+			merged.set(i,right_part[i-32]);
+		}
+		//apply the left part to the left of the merged
+		for (int i = 31; i >= 0; i--) {
+			merged.set(i,left_part[i]);
+		}
+		osc.Cout("Round output\t\t"+merged.to_string());
+		//set the merged as the new input for next round
+		input=merged;
+	}
 }
 
 /**

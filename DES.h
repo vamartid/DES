@@ -30,6 +30,7 @@ private:
     std::bitset<32> Permutate( std::bitset<32> , unsigned short []);
     std::bitset<4> S(std::bitset<6>,int);
     std::bitset<32> F(std::bitset<32>, std::bitset<48>);
+    void Rounds(std::bitset<64>&);
 public:
     DES();
     DES(const DES& );

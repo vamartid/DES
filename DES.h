@@ -12,6 +12,7 @@ using std::endl;
 using std::string;
 #include <iomanip>
 using std::setfill;
+#include <sstream>
 
 #include "OutputStreamController.h"
 
@@ -26,6 +27,9 @@ private:
     std::bitset<48> KeyCompression( std::bitset<56> );
     void KeyGen(std::bitset<64>);
     std::bitset<64> Permutate( std::bitset<64> , unsigned short []);
+    std::bitset<32> Permutate( std::bitset<32> , unsigned short []);
+    std::bitset<4> S(std::bitset<6>,int);
+    std::bitset<32> F(std::bitset<32>, std::bitset<48>);
 public:
     DES();
     DES(const DES& );

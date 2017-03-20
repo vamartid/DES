@@ -190,6 +190,13 @@ void DES::Rounds(std::bitset<64> &input ){
 
 		//do the cross way merge
 		std::bitset<64> merged;
+		//if it is the final round then reverse
+		//f_output here takes the temp's variable role
+		if(round==16){
+			f_output=right_part;
+			right_part=left_part;
+			left_part=f_output;
+		}
 		//apply the right part to the left of the merged
 		for (int i = 63; i > 31; i--) {
 			merged.set(i,right_part[i-32]);

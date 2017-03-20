@@ -20,8 +20,7 @@ using std::istream_iterator;
 //#endif
 
 int main(int argc, char** argv) {
-    clock_t t;
-    t = clock();
+    clock_t t = clock();
 
     std::bitset<64> message("0000000100100011010001010110011110001001101010111100110111101111");
     std::bitset<64> key("0001001100110100010101110111100110011011101111001101111111110001");

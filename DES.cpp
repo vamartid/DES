@@ -45,13 +45,11 @@ unsigned short final_permutation[]={
 	33,  1, 41,  9, 49, 17, 57, 25
 };
 
-//DES::DES(std::bitset<64> m ) {
-//    message = m;
-//}
 DES::DES() {
-
+	osc= OutputStreamController(false,true);
 }
 DES::DES(const DES& orig) {
+
 }
 
 DES::~DES() {
@@ -73,16 +71,19 @@ std::bitset<64>  DES::Cipher(std::bitset<64> message, std::bitset<64> key){
     //we can now perform the General Structure of DES algorithm
     //
     //the message is
-    std::cout<<"Message\t\t\t"<<message<<std::endl;
+    osc.Cout("Message\t\t"+message.to_string());
     //perform initial permutation
     ciphertext=Permutate(message,initial_permutation);
-    std::cout<<"Initial permutation\t"<<ciphertext<<std::endl;
+    osc.Cout("Initial permutation\t"+ciphertext.to_string());
 	//we can now perform the rounds
     //->need to be implemented
 
     //perform final permutation
     ciphertext=Permutate(message,final_permutation);
-	std::cout<<"Final permutation\t"<<ciphertext<<std::endl;
+
+    osc.Cout("Final permutation\t"+ciphertext.to_string());
+//    osc.CoutAll();
+    osc.LogSaved("DesLogFile");
 
     return ciphertext;
 }
@@ -111,11 +112,11 @@ std::bitset<64> DES::Permutate( std::bitset<64> input ,unsigned short permutatio
  */
 void DES::KeyGen(std::bitset<64> key){
 	unsigned short round=1;
-	std::cout<<"Input key\t\t"<<key<<std::endl;
+	osc.Cout("Input key\t\t"+key.to_string());
 	//parity drop on key input
     std::bitset<56> cipherKey=ParityDrop(key);
     //print output of parity drop
-	std::cout<<"Parity drop\t\t"<<cipherKey<<std::endl;
+    osc.Cout("Parity drop\t\t"+cipherKey.to_string());
 	//declare the parts
 	std::bitset<28> left_part,right_part;
 	//we need to break the key on the 27 bit to two parts
@@ -127,8 +128,8 @@ void DES::KeyGen(std::bitset<64> key){
 	}
 	do{
 		//print the 2 parts
-		std::cout<<"Left Part\t\t"<<left_part<<std::endl;
-		std::cout<<"Right Part\t\t"<<right_part<<std::endl;
+		osc.Cout("Left Part\t\t"+left_part.to_string());
+		osc.Cout("Right Part\t\t"+right_part.to_string());
 		//set the shift value
 		//1 on rounds 1,2,9,16
 		//2 on all other rounds
@@ -142,8 +143,8 @@ void DES::KeyGen(std::bitset<64> key){
 //		left_part=left_part<<shift;
 //		right_part=right_part<<shift;
 		//print the 2 parts
-		std::cout<<"Left  Shifted Part\t"<<left_part<<std::endl;
-		std::cout<<"Right Shifted Part\t"<<right_part<<std::endl;
+		osc.Cout("Left  Shifted Part\t"+left_part.to_string());
+		osc.Cout("Right Shifted Part\t"+right_part.to_string());
 		//then merge them
 		std::bitset<56> merged;
 		//apply the left part to the left of the merged
@@ -154,17 +155,19 @@ void DES::KeyGen(std::bitset<64> key){
 		for (int i = 27; i >= 0; i--) {
 			merged.set(i,right_part[i]);
 		}
-		std::cout<<"Merged output\t\t"<<merged<<std::endl;
+		osc.Cout("Merged output\t"+merged.to_string());
 		//and compress
 		std::bitset<48> compressed= KeyCompression(merged);
-		std::cout<<"Compressed merged\t"<<compressed<<std::endl;
+		osc.Cout("Compressed merged\t"+compressed.to_string());
 		//set the compressed output as the key of the round
 		keys[round-1]=compressed;
 		round++;
 		//this will repeat for the 16 keys and the shift will be
 	}while(round<=16);
 	for (int i = 0; i < 16; ++i) {
-		std::cout<<"Output Key "<<i<<"\t\t"<<keys[i]<<std::endl;
+		std::ostringstream i_str_stream;
+		i_str_stream<< std::setw(2) << std::setfill('0') << i;
+		osc.Cout("Output Key "+string(i_str_stream.str())+"\t"+keys[i].to_string());
 	}
 }
 

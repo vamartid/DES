@@ -118,15 +118,25 @@ unsigned short E[] = {
     28, 29, 30, 31, 32, 1
 };
 
-DES::DES() {
+/**
+ * constructor for DES object
+ */
+DES::DES(bool encrypt) {
+	type=encrypt;
 	osc= OutputStreamController(false,true);
 }
-DES::DES(const DES& orig) {
-
+/**
+ * copy constructor for DES object
+ */
+DES::DES(const DES& obj) {
+	type=obj.type;
+	osc=obj.osc;
 }
 
+/**
+ * destructor for DES object
+ */
 DES::~DES() {
-
 }
 
 /**
@@ -145,6 +155,7 @@ std::bitset<64>  DES::Cipher(std::bitset<64> message, std::bitset<64> key){
     //
     //the message is
     osc.Cout("Message\t\t"+message.to_string());
+
     //perform initial permutation
     ciphertext=Permutate(message,initial_permutation);
     osc.Cout("Initial permutation\t"+ciphertext.to_string());
@@ -163,6 +174,22 @@ std::bitset<64>  DES::Cipher(std::bitset<64> message, std::bitset<64> key){
     return ciphertext;
 }
 
+/**
+ * this function returns the keys
+ * from the first to the last if the type is true
+ * and from the last to the first if the type is false
+ */
+int DES::Type(int round_key){
+    if(type){
+    	return round_key;
+    }else{
+    	return 15-round_key;
+    }
+}
+
+/**
+ * this executes the rounds of the DES structure
+ */
 void DES::Rounds(std::bitset<64> &input ){
 	for (short int round=1;round<=16;round++){
 		osc.Cout("Round "+std::to_string(round));
@@ -180,7 +207,7 @@ void DES::Rounds(std::bitset<64> &input ){
 		osc.Cout("Left Part\t\t"+left_part.to_string());
 		osc.Cout("Right Part\t\t"+right_part.to_string());
 		//send the right part to the F function with the round's key
-		std::bitset<32> f_output=F(right_part, keys[round-1]);
+		std::bitset<32> f_output=F(right_part, keys[Type(round-1)]);
 		osc.Cout("F output\t\t"+f_output.to_string());
 		//XOR the F function output with the left part
 		//set that output as the current left part

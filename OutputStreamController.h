@@ -25,6 +25,7 @@ class OutputStreamController {
 public:
 	OutputStreamController();
 	OutputStreamController(bool,bool);
+	OutputStreamController(const OutputStreamController&);
 	virtual ~OutputStreamController();
 	void Cout(string);
 	void CoutAll();

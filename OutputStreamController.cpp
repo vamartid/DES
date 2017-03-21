@@ -1,17 +1,35 @@
 #include "OutputStreamController.h"
 
+/**
+ * constructor for OutputStreamController object
+ */
 OutputStreamController::OutputStreamController(bool state,bool keep) {
 	time = clock();
 	active=state;
 	save=keep;
 }
 
+/**
+ * constructor for OutputStreamController object
+ */
 OutputStreamController::OutputStreamController() {
 	time = clock();
 	active=true;
 	save=true;
 }
 
+/**
+ * copy constructor for OutputStreamController object
+ */
+OutputStreamController::OutputStreamController(const OutputStreamController& obj) {
+	time=obj.time;
+	active=obj.active;
+	save=obj.save;
+}
+
+/**
+ * destructor for OutputStreamController object
+ */
 OutputStreamController::~OutputStreamController() {
 
 }

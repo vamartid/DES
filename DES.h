@@ -17,11 +17,12 @@ using std::setfill;
 #include "OutputStreamController.h"
 
 class DES {
+
 private:
 	//fields
     bool type;//declares if the object is encryptor or decryptor
 	std::bitset<48> keys[16];
-    OutputStreamController osc;// maybe will be set public
+
     //functions
     int Type(int);
     std::bitset<56> ParityDrop(std::bitset<64>);
@@ -34,6 +35,7 @@ private:
     std::bitset<32> F(std::bitset<32>, std::bitset<48>);
     void Rounds(std::bitset<64>&);
 public:
+    OutputStreamController osc;// maybe will be set public
     DES(bool);
     DES(const DES& );
     virtual ~DES();

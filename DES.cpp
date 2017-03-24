@@ -168,8 +168,6 @@ std::bitset<64>  DES::Cipher(std::bitset<64> message, std::bitset<64> key){
     ciphertext=Permutate(ciphertext,final_permutation);
 
     osc.Cout("Final permutation\t"+ciphertext.to_string());
-//    osc.CoutAll();
-    osc.LogSaved("DesLogFile");
 
     return ciphertext;
 }

@@ -9,30 +9,21 @@ using std::string;
 #include <iterator>
 using std::istream_iterator;
 #include <bitset>         // std::bitset
-#include <time.h>       /* clock_t, clock, CLOCKS_PER_SEC */
 #include<cstring>
 #include "DES.h"
 #include "OutputStreamController.h"
 
 void help() {
-	cout << "help is comming..." << endl;
-	cout << "Use the foloing flags for the given gools..." << endl;
-	cout << "-e\tencrypt the given message with the given key" << endl;
-	cout << "-d\tdeencrypt  the given message with the given key" << endl;
-	cout << "-p\tprint log on console" << endl;
-	cout << "-l\tsave log into a file" << endl;
-	cout << "-m\tmessage flag, MUST BE FOLLOWED BY 64-bit MESSAGE" << endl;
-	cout << "-m\tkey flag, MUST BE FOLLOWED BY 64-bit KEY" << endl;
-
+	cout << "Use the following flags for the given gools..." << endl;
+	cout << "-e\tEncrypt the given message with the given key" << endl;
+	cout << "-d\tDeencrypt  the given message with the given key" << endl;
+	cout << "-p\tPrint log on console" << endl;
+	cout << "-l\tSave to the log file \"DesEventLog.log\"" << endl;
+	cout << "-m\tMessage flag, MUST BE FOLLOWED BY 64-bit MESSAGE" << endl;
+	cout << "-m\tKey flag, MUST BE FOLLOWED BY 64-bit KEY" << endl;
 }
 
-//use this pls nullptr
-//#ifndef NULL
-//#define NULL   ((void *) 0)
-//#endif
-
 int main(int argc, const char** argv) {
-//	clock_t t = clock();
 
 	string t_message;
 	string t_key;
@@ -42,9 +33,10 @@ int main(int argc, const char** argv) {
 	bool log = false;
 	bool print = false;
 	bool enc = true;
-
+	bool skip=false;
 	if (strcmp(argv[1], "-help")==0) {
 		help();
+		skip=true;
 	}
 	else {
 		for (;i < argc && flags_ok;i++) {
@@ -86,29 +78,24 @@ int main(int argc, const char** argv) {
 			}
 		}
 	}
-	//0000000100100011010001010110011110001001101010111100110111101111
-	//1000110010100110010011011110100111000001101100010010001110100111
+	//create the object which will do the encryption
 	DES *des = new DES(enc);//true-false encryptor-decryptor
-
-	//key
+	//set key
 	std::bitset<64> key(t_key);
-	//message
+	//set message
 	std::bitset<64> message(t_message);
-    //DES *des = new DES(message);
-	//DES *des = new DES(false);//true-false encryptor-decryptor
-	std::cout << des->Cipher(message,key)<<std::endl;
-	if(print){
-		des->osc.CoutAll();
+	if(!skip){
+		//print the output
+		std::cout << des->Cipher(message,key)<<std::endl;
+		//if he typed -p print messages
+		if(print){
+			des->osc.CoutAll();
+		}
+		//if he typed -l log messages
+		if(log){
+			des->osc.LogSaved("DesEventLog");
+		}
 	}
-	if(log){
-		des->osc.LogSaved("DesEventLog");
-	}
-	//t = clock() - t;
-	//std::cout << "Execution time " << t << " clicks " << (((float)t) / CLOCKS_PER_SEC) << " seconds" << endl;
-	
-	/*if (flags_ok) {
-
-	}*/
-
 	return 0;
 }
+
